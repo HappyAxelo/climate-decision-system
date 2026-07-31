@@ -62,7 +62,7 @@ export default function DecisionSupportPage() {
             <div>
               <h3 className="font-medium">Recommendations engine</h3>
               <p className="text-sm text-ink-500">
-                Satellite, forecast, IoT and drone inputs ranked into confidence-scored decisions.
+                Satellite, forecast and IoT inputs ranked into confidence-scored decisions.
               </p>
             </div>
           </div>

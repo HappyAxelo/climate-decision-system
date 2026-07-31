@@ -14,9 +14,10 @@ import {
   Wifi,
   WifiOff,
 } from "lucide-react";
-import { sensors, sensorLiveSeries } from "@/lib/mockData";
+import { sensors as seedSensors, sensorLiveSeries } from "@/lib/mockData";
 import { PageHeader, Card, SectionTitle, Chip } from "@/components/ui";
 import { TrendChart } from "@/components/Charts";
+import type { SensorsResult } from "@/lib/data/iot";
 
 const MapView = dynamic(() => import("@/components/MapView"), { ssr: false });
 
@@ -27,12 +28,29 @@ const statusChip: Record<string, "green" | "amber" | "red"> = {
 };
 
 export default function IoTPage() {
+  const [sensors, setSensors] = useState(seedSensors);
+  const [source, setSource] = useState("Seed (awaiting ingestion)");
   const online = sensors.filter((s) => s.status !== "offline").length;
   const [tick, setTick] = useState(0);
 
-  // simulate live refresh
+  // simulate per-second variation for the live feel
   useEffect(() => {
     const id = setInterval(() => setTick((t) => t + 1), 3000);
+    return () => clearInterval(id);
+  }, []);
+
+  // pull current sensors (seed + any live ingestion) from /api/iot, poll every 15s
+  useEffect(() => {
+    const load = () =>
+      fetch("/api/iot")
+        .then((r) => r.json())
+        .then((d: SensorsResult) => {
+          if (d.sensors?.length) setSensors(d.sensors);
+          setSource(d.source);
+        })
+        .catch(() => {});
+    load();
+    const id = setInterval(load, 15000);
     return () => clearInterval(id);
   }, []);
 
@@ -57,7 +75,7 @@ export default function IoTPage() {
     <div className="space-y-6">
       <PageHeader
         title="IoT Monitoring"
-        subtitle="Real-time field sensor network · soil · weather · telemetry"
+        subtitle={`Field sensor network · ${source}`}
         icon={Cpu}
         actions={
           <div className="flex items-center gap-3">

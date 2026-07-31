@@ -9,7 +9,6 @@ import {
   Droplets,
   CloudRain,
   Waves,
-  Plane,
   Radio,
   Flame,
   Layers,
@@ -32,7 +31,6 @@ const layers = [
   { key: "soil", label: "Soil Moisture", icon: Droplets, color: "#3b82f6", on: false },
   { key: "rain", label: "Rainfall", icon: CloudRain, color: "#0ea5e9", on: false },
   { key: "water", label: "Water Bodies", icon: Waves, color: "#06b6d4", on: false },
-  { key: "drone", label: "Drone Imagery", icon: Plane, color: "#a855f7", on: false },
   { key: "sensors", label: "IoT Sensor Locations", icon: Radio, color: "#f59e0b", on: true },
   { key: "heatmap", label: "Risk Heatmap", icon: Flame, color: "#f43f5e", on: true },
 ];

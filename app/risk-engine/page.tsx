@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ShieldAlert, Satellite, CloudRain, Cpu, Plane, ArrowRight } from "lucide-react";
+import { ShieldAlert, Satellite, CloudRain, Cpu, ArrowRight } from "lucide-react";
 import {
   riskLayers,
   districts,
@@ -15,7 +15,6 @@ const layerIcon: Record<string, any> = {
   "Satellite Observations": Satellite,
   "Climate Model Outputs": CloudRain,
   "IoT Sensor Data": Cpu,
-  "Drone Imagery": Plane,
 };
 
 function Gauge({ score, risk }: { score: number; risk: RiskLevel }) {
@@ -64,7 +63,7 @@ export default function RiskEnginePage() {
     <div className="space-y-6">
       <PageHeader
         title="Multi-Hazard Risk Engine"
-        subtitle="Fusing satellite, climate, IoT & drone signals into one Vulnerability Score"
+        subtitle="Fusing satellite, climate & IoT signals into one Vulnerability Score"
         icon={ShieldAlert}
       />
 

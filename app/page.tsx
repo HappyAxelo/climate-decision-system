@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
@@ -27,6 +28,7 @@ import {
   riskColor,
 } from "@/lib/mockData";
 import { Card, RiskBadge, Trend, Sparkline, PageHeader, Chip, SectionTitle } from "@/components/ui";
+import type { WeatherData } from "@/lib/data/weather";
 
 const MapView = dynamic(() => import("@/components/MapView"), { ssr: false });
 
@@ -41,6 +43,15 @@ const metricIcon: Record<string, typeof Sun> = {
 };
 
 export default function Dashboard() {
+  const [wx, setWx] = useState<WeatherData>(weather as unknown as WeatherData);
+
+  useEffect(() => {
+    fetch("/api/weather")
+      .then((r) => r.json())
+      .then((d: WeatherData) => setWx(d))
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -67,7 +78,7 @@ export default function Dashboard() {
           { label: "Active alerts", value: kpis.activeAlerts, icon: Brain },
           { label: "Farmers reached", value: `${(kpis.farmersReached / 1000).toFixed(0)}k`, icon: Users2 },
           { label: "Hectares", value: `${(kpis.hectaresMonitored / 1e6).toFixed(2)}M`, icon: Layers },
-          { label: "Drone missions", value: kpis.droneMissions, icon: Sprout },
+          { label: "Seasons tracked", value: kpis.seasonsTracked, icon: Sprout },
         ].map((k) => (
           <div key={k.label} className="surface flex items-center gap-3 p-3.5">
             <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-ink-100 text-ink-500 dark:bg-ink-800 dark:text-ink-400">
@@ -126,38 +137,45 @@ export default function Dashboard() {
           </div>
         </Card>
 
-        {/* Weather widget */}
+        {/* Weather widget — live via Open-Meteo */}
         <Card className="!p-0 overflow-hidden">
           <div className="border-b border-ink-200 p-5 dark:border-ink-800">
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-1.5 text-sm font-medium text-ink-500">
-                  <MapPin size={14} /> {weather.location}
+                  <MapPin size={14} /> {wx.location}
                 </div>
                 <div className="mt-3 flex items-center gap-2">
-                  <span className="text-5xl font-semibold">{weather.temp}°</span>
+                  <span className="text-5xl font-semibold">{wx.temp}°</span>
                   <div className="text-sm text-ink-500">
-                    <div>{weather.condition}</div>
-                    <div className="text-ink-400">Feels {weather.feelsLike}°</div>
+                    <div>{wx.condition}</div>
+                    <div className="text-ink-400">Feels {wx.feelsLike}°</div>
                   </div>
                 </div>
               </div>
-              <Sun size={44} className="text-amber-400" />
+              <div className="flex flex-col items-end gap-2">
+                <Sun size={44} className="text-amber-400" />
+                {wx.live ? (
+                  <Chip tone="green">Live</Chip>
+                ) : (
+                  <Chip>Sample</Chip>
+                )}
+              </div>
             </div>
             <div className="mt-4 grid grid-cols-3 gap-2 text-xs text-ink-500">
               <div className="surface-muted flex items-center gap-1.5 p-2">
-                <Droplets size={14} className="text-sky-500" /> {weather.humidity}%
+                <Droplets size={14} className="text-sky-500" /> {wx.humidity}%
               </div>
               <div className="surface-muted flex items-center gap-1.5 p-2">
-                <Wind size={14} className="text-ink-400" /> {weather.wind} km/h
+                <Wind size={14} className="text-ink-400" /> {wx.wind} km/h
               </div>
               <div className="surface-muted flex items-center gap-1.5 p-2">
-                <Gauge size={14} className="text-ink-400" /> UV {weather.uv}
+                <Gauge size={14} className="text-ink-400" /> UV {wx.uv}
               </div>
             </div>
           </div>
           <div className="grid grid-cols-5 gap-1 p-3">
-            {weather.forecast.map((f) => {
+            {wx.forecast.map((f) => {
               const WIcon = weatherIcon[f.icon];
               return (
                 <div key={f.day} className="rounded-lg px-1 py-2 text-center hover:bg-ink-100 dark:hover:bg-ink-800">

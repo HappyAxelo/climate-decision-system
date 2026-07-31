@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { Satellite, Layers, Radio, CheckCircle2, MoveHorizontal } from "lucide-react";
 import { eoDatasets, fractionalCover, ndviTrend } from "@/lib/mockData";
 import { PageHeader, Card, SectionTitle, Chip } from "@/components/ui";
 import { TrendChart } from "@/components/Charts";
+import type { NdviResult } from "@/lib/data/ndvi";
 
 // Simulated NDVI raster (green = healthy, brown = stressed)
 function NdviTile({ health }: { health: number }) {
@@ -54,6 +55,19 @@ function BeforeAfter() {
 }
 
 export default function EarthObservationPage() {
+  const [ndvi, setNdvi] = useState<NdviResult>({
+    series: ndviTrend as NdviResult["series"],
+    live: false,
+    source: "Loading…",
+  });
+
+  useEffect(() => {
+    fetch("/api/ndvi")
+      .then((r) => r.json())
+      .then((d: NdviResult) => setNdvi(d))
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -151,11 +165,13 @@ export default function EarthObservationPage() {
 
       {/* NDVI time series */}
       <Card>
-        <SectionTitle action={<Chip tone="blue">MODIS / Sentinel composite</Chip>}>
+        <SectionTitle
+          action={<Chip tone={ndvi.live ? "green" : "default"}>{ndvi.live ? "Live" : "Sample"} · {ndvi.source}</Chip>}
+        >
           NDVI Time-Series
         </SectionTitle>
         <TrendChart
-          data={ndviTrend}
+          data={ndvi.series}
           xKey="month"
           type="area"
           height={240}

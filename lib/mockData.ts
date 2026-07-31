@@ -88,6 +88,8 @@ export const weather = {
     { day: "Thu", hi: 27, lo: 16, icon: "rain", rain: 65 },
     { day: "Fri", hi: 28, lo: 16, icon: "cloud", rain: 35 },
   ],
+  live: false,
+  updatedAt: "",
 };
 
 // ---------------------------------------------------------------------------
@@ -111,7 +113,7 @@ export const recommendations: Recommendation[] = [
   { id: "r3", title: "Deploy drought-resistant seeds", detail: "Distribute certified drought-tolerant maize (ZM523) and bean varieties across high-risk Eastern districts ahead of Season B.", action: "Pre-position seed stock", risk: "high", district: "Kayonza", confidence: 84, impact: "Covers 31,000 smallholders", category: "seeds" },
   { id: "r4", title: "Livestock relocation advisory", detail: "Pasture NDVI down 22% and surface water bodies shrinking. Move herds toward Akagera buffer grazing corridors.", action: "Issue relocation guidance", risk: "moderate", district: "Bugesera", confidence: 79, impact: "~26,000 cattle affected", category: "livestock" },
   { id: "r5", title: "Water conservation measures", detail: "Reservoir levels at 61%. Promote drip irrigation, mulching, and rainwater harvesting in moderate-risk sectors.", action: "Launch conservation campaign", risk: "moderate", district: "Gatsibo", confidence: 82, impact: "Cuts water use ~18%", category: "water" },
-  { id: "r6", title: "Increase extension monitoring", detail: "Deploy additional field officers and drone flights to validate satellite stress signals in emerging hotspots.", action: "Schedule 3 drone missions", risk: "moderate", district: "Huye", confidence: 76, impact: "Improves early detection", category: "monitoring" },
+  { id: "r6", title: "Increase extension monitoring", detail: "Deploy additional field officers to validate satellite stress signals in emerging hotspots.", action: "Schedule 3 field visits", risk: "moderate", district: "Huye", confidence: 76, impact: "Improves early detection", category: "monitoring" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -231,29 +233,6 @@ export const sensorLiveSeries = Array.from({ length: 24 }, (_, i) => ({
 }));
 
 // ---------------------------------------------------------------------------
-// Drone analytics
-// ---------------------------------------------------------------------------
-export interface DroneMission {
-  id: string;
-  name: string;
-  district: string;
-  date: string;
-  area: number; // ha
-  status: "completed" | "processing" | "scheduled";
-  healthScore: number; // %
-  stressDetected: number; // %
-  images: number;
-}
-
-export const droneMissions: DroneMission[] = [
-  { id: "DM-231", name: "Kirehe Maize Survey", district: "Kirehe", date: "2026-07-27", area: 420, status: "completed", healthScore: 58, stressDetected: 34, images: 1240 },
-  { id: "DM-230", name: "Nyagatare Pasture Scan", district: "Nyagatare", date: "2026-07-25", area: 680, status: "completed", healthScore: 62, stressDetected: 28, images: 1890 },
-  { id: "DM-229", name: "Kayonza Bean Fields", district: "Kayonza", date: "2026-07-24", area: 310, status: "completed", healthScore: 71, stressDetected: 19, images: 940 },
-  { id: "DM-232", name: "Bugesera Irrigation Check", district: "Bugesera", date: "2026-07-28", area: 250, status: "processing", healthScore: 0, stressDetected: 0, images: 720 },
-  { id: "DM-233", name: "Gatsibo Crop Audit", district: "Gatsibo", date: "2026-07-30", area: 540, status: "scheduled", healthScore: 0, stressDetected: 0, images: 0 },
-];
-
-// ---------------------------------------------------------------------------
 // Earth observation datasets
 // ---------------------------------------------------------------------------
 export const eoDatasets = [
@@ -312,7 +291,7 @@ export const rolePermissions: Record<UserRole, string[]> = {
   Administrator: ["Full system access", "User management", "Configure alerts", "Export all data", "Manage integrations"],
   Government: ["National dashboards", "All district reports", "Policy analytics", "Export reports"],
   Researcher: ["Earth observation data", "Analytics & models", "Historical archives", "Export datasets"],
-  "Extension Officer": ["District dashboards", "Field alerts", "Drone missions", "Farmer advisories"],
+  "Extension Officer": ["District dashboards", "Field alerts", "Field surveys", "Farmer advisories"],
   Farmer: ["Local weather", "Personal advisories", "SMS alerts", "Crop recommendations"],
 };
 
@@ -320,10 +299,9 @@ export const rolePermissions: Record<UserRole, string[]> = {
 // Risk engine — input layers combined into vulnerability score
 // ---------------------------------------------------------------------------
 export const riskLayers = [
-  { name: "Satellite Observations", weight: 30, signal: 78, source: "Sentinel-2 / MODIS NDVI, LST" },
-  { name: "Climate Model Outputs", weight: 25, signal: 71, source: "Seasonal forecast, WRSI" },
-  { name: "IoT Sensor Data", weight: 25, signal: 84, source: "Soil moisture, temp, rainfall" },
-  { name: "Drone Imagery", weight: 20, signal: 66, source: "Crop stress, canopy health" },
+  { name: "Satellite Observations", weight: 40, signal: 78, source: "Sentinel-2 / MODIS NDVI, LST" },
+  { name: "Climate Model Outputs", weight: 30, signal: 71, source: "Seasonal forecast, WRSI" },
+  { name: "IoT Sensor Data", weight: 30, signal: 84, source: "Soil moisture, temp, rainfall" },
 ];
 
 export const kpis = {
@@ -332,5 +310,5 @@ export const kpis = {
   activeAlerts: 6,
   farmersReached: 128500,
   hectaresMonitored: 1840000,
-  droneMissions: 233,
+  seasonsTracked: 4,
 };

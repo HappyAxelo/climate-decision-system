@@ -6,7 +6,6 @@ import {
   Satellite,
   CloudRain,
   Cpu,
-  Plane,
   BellRing,
   FileText,
   BarChart3,
@@ -33,7 +32,6 @@ export const navItems: NavItem[] = [
 
   { label: "Earth Observation", href: "/earth-observation", icon: Satellite, group: "Data Sources" },
   { label: "IoT Monitoring", href: "/iot", icon: Cpu, group: "Data Sources" },
-  { label: "Drone Analytics", href: "/drone", icon: Plane, group: "Data Sources" },
 
   { label: "Alert Center", href: "/alerts", icon: BellRing, badge: "6", group: "Operations" },
   { label: "Reports", href: "/reports", icon: FileText, group: "Operations" },
